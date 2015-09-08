@@ -2,13 +2,6 @@
 <items version="2" >
 
     <item
-        jar="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/classes.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="f8efd0096475e0daf054267b61544e10dc776503">
-        <dex dex="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/pre-dexed/debug/classes-90785f5390969847af835596a678c9600709fdad.jar" />
-    </item>
-    <item
         jar="/root/android-sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.1/support-annotations-22.2.1.jar"
         jumboMode="false"
         revision="22.0.1"
@@ -16,18 +9,25 @@
         <dex dex="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/pre-dexed/debug/support-annotations-22.2.1-b9566c79dc81a78d967608645e4552a03d418679.jar" />
     </item>
     <item
-        jar="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/libs/internal_impl-22.2.1.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="c471eaaba13ff64f6e0383d1c30a9cdc9a97efeb">
-        <dex dex="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/pre-dexed/debug/internal_impl-22.2.1-95fe0bc2cbdcbbad4b955cb83d7835ecfd02b3f8.jar" />
-    </item>
-    <item
         jar="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.1/jars/classes.jar"
         jumboMode="false"
         revision="22.0.1"
         sha1="4486e953d1f35f8ccab098b1dd67146366d5f731">
         <dex dex="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/pre-dexed/debug/classes-4013da1f23d1b3b666d14b1e92e5036a8b8445dd.jar" />
+    </item>
+    <item
+        jar="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f8efd0096475e0daf054267b61544e10dc776503">
+        <dex dex="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/pre-dexed/debug/classes-90785f5390969847af835596a678c9600709fdad.jar" />
+    </item>
+    <item
+        jar="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/libs/internal_impl-22.2.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c471eaaba13ff64f6e0383d1c30a9cdc9a97efeb">
+        <dex dex="/root/AndroidStudioProjects/Bluesms/app/build/intermediates/pre-dexed/debug/internal_impl-22.2.1-95fe0bc2cbdcbbad4b955cb83d7835ecfd02b3f8.jar" />
     </item>
 
 </items>
