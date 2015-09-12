@@ -7,33 +7,39 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class home extends Activity {
-    private Intent i = null;
     private Button btn_run;
     private Button btn_debug;
-    private final tunnel receiver = new tunnel();
+    private TextView txt_uuid;
 
+    private Intent i = null;
+    private final tunnel receiver = new tunnel();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_home);
 
+        i = new Intent(this, BlueSms.class);
         // broadcast receiver
         IntentFilter filter = new IntentFilter("08945BlueSms");
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
 
-        i = new Intent(this, BlueSms.class);
         btn_run = (Button) findViewById(R.id.run);
         btn_debug = (Button) findViewById(R.id.debug);
+        txt_uuid = (TextView) findViewById(R.id.txt_uuid);
 
         btn_run.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,16 +50,18 @@ public class home extends Activity {
                 }
                 else {
                     stopService(i);
-                    btn_run.setText("Lancer");
+                    serviceStopped();
                 }
             }
         });
+
         btn_debug.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // open windows debug
             }
         });
+
     }
 
     @Override
@@ -85,15 +93,33 @@ public class home extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void serviceStopped() {
+        // ensemble des modifications sur l'interface l'orsque le service se coupe
+        btn_run.setText("Lancer");
+        txt_uuid.setText("UUID : null");
+    }
 
     private class tunnel extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.println(Log.ASSERT, "receive broadcast", intent.getAction());
-            String extra= intent.getStringExtra("content");
+            String[] extra = intent.getStringArrayExtra("content");
 
-            if (extra.equals("service is died")) {
-                btn_run.setText("Lancer");
+            if (extra[0].equals("uuid")) {
+                txt_uuid.setText("Uuid : " + extra[1].toString() + "\n" + "addr : " + extra[2].toString());
+            }
+            if (extra[0].equals("service is died")) {
+                serviceStopped();
+            }
+            if (extra[0].equals("toast")) {
+                String num = extra[1];
+                String message = extra[2];
+
+                SmsManager sms = SmsManager.getDefault();
+                sms.sendTextMessage(num, null, message, null, null);
+
+                Toast T = Toast.makeText(getApplicationContext(), num+":"+message, Toast.LENGTH_LONG);
+                T.show();
             }
         }
     }

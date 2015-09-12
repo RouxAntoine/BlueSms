@@ -25,14 +25,31 @@
             android:height="@dimen/abc_text_size_title_material_toolbar"
             android:textSize="50px"
             android:textStyle="normal|bold|italic" />
+
     </FrameLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="117dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_below="@+id/frameLayout"
+        android:id="@+id/linearLayout">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:text="UUID : null"
+            android:id="@+id/txt_uuid"
+            android:gravity="center_vertical|center_horizontal" />
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/frameLayout">
+        android:layout_below="@+id/linearLayout">
 
         <Button
             android:layout_width="166dp"
