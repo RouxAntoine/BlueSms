@@ -54,7 +54,7 @@
         <Button
             android:layout_width="166dp"
             android:layout_height="92dp"
-            android:text="Lancer"
+            android:text="@string/run"
             android:id="@+id/run"
             android:layout_gravity="center_vertical"
             android:width="100dp"
@@ -63,7 +63,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="81dp"
-            android:text="debug"
+            android:text="@string/discroverable"
             android:id="@+id/debug"
             android:width="100dp"
             android:layout_gravity="center_vertical"

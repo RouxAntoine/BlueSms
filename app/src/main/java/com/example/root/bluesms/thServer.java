@@ -7,6 +7,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -42,8 +43,19 @@ public class thServer extends Thread {
                 sock = sockServ.accept();
                 if (sock != null) {
                     Log.d("CONNECTED", "Connected bluetooth");
-
                     thClient client = new thClient(sock, context);
+
+                    try {
+                        Log.println(Log.ASSERT, "thClient : ", "envoie du message de bienvenue");
+//                        {"header":{"size":"5","type":"message"},"content":"salut"}
+//                        {"header":{"size":"5","type":"numero"},"content":{"num":"0677564892","name":"toto"}}
+
+                        byte[] byteString = ("hello world !!!").getBytes();
+                        sock.getOutputStream().write(byteString);
+                    } catch (IOException e) {
+                        Log.println(Log.ASSERT,"Erreur de bienvenue", e.getMessage());
+                    }
+
                     lstClient.add(client);
                     client.start();
                 }

@@ -2,6 +2,7 @@ package com.example.root.bluesms;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,7 +34,7 @@ public class home extends Activity {
         setContentView(R.layout.layout_home);
 
         i = new Intent(this, BlueSms.class);
-        // broadcast receiver
+        // register broadcast receiver
         IntentFilter filter = new IntentFilter("08945BlueSms");
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
 
@@ -58,7 +59,8 @@ public class home extends Activity {
         btn_debug.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // open windows debug
+                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                startActivity(discoverableIntent);
             }
         });
 
@@ -109,6 +111,10 @@ public class home extends Activity {
                 txt_uuid.setText("Uuid : " + extra[1].toString() + "\n" + "addr : " + extra[2].toString());
             }
             if (extra[0].equals("service is died")) {
+                serviceStopped();
+            }
+            if(extra[0].equals("killSevrice")) {
+                stopService(i);
                 serviceStopped();
             }
             if (extra[0].equals("toast")) {

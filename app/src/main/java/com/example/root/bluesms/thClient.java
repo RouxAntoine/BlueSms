@@ -42,18 +42,23 @@ public class thClient extends Thread {
             while(!end) {
                 bytesRead = in.read(messageByte);
                 String dataString = new String(messageByte, 0, bytesRead);
-
-                if (dataString.equals("quit") || !sock.isConnected()) {
-                    end = true;
-                }
-
                 arrayData = dataString.split(":");
+
                 if(arrayData.length > 1) {
                     String num =arrayData[0];
                     String messageString = arrayData[1];
 
-                    Intent i = new Intent("08945BlueSms");
-                    i.putExtra("content",new String[] { "toast", num, messageString});
+                    if (messageString.equals("quit") || !sock.isConnected()) {
+                        end = true;
+                    }
+                    if (messageString.equals("!shutdown!")) {
+                        Intent i = new Intent("08945BlueSms");
+                        i.putExtra("content", new String[]{"killSevrice"});
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(i);
+                    }
+
+                        Intent i = new Intent("08945BlueSms");
+                    i.putExtra("content", new String[]{"toast", num, messageString});
                     LocalBroadcastManager.getInstance(context).sendBroadcast(i);
                 }
             }

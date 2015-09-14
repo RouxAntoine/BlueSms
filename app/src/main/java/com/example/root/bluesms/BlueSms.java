@@ -58,6 +58,7 @@ public class BlueSms extends Service {
         // initialise bluetooth
         adapter = ((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter();
         toggleBluetooth(ENABLE_BLUE);
+
         server = new thServer(adapter, uuid, this);
         server.start();
         Log.println(Log.ASSERT, "service", " Server running");
