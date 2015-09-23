@@ -11,6 +11,7 @@ import android.widget.Toast;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created by root on 09/09/15.
@@ -36,6 +37,9 @@ public class thClient extends Thread {
         boolean end = false;
         int bytesRead = 0;
         String[] arrayData = null;
+//                        {"header":{"size":"5","type":"message"},"content":"salut"}
+//                        {"header":{"size":"5","type":"numero"},"content":{"num":"0677564892","name":"toto"}}
+        write("hello world !!!");
 
         try {
             DataInputStream in = new DataInputStream(sock.getInputStream());
@@ -57,7 +61,7 @@ public class thClient extends Thread {
                         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
                     }
 
-                        Intent i = new Intent("08945BlueSms");
+                    Intent i = new Intent("08945BlueSms");
                     i.putExtra("content", new String[]{"toast", num, messageString});
                     LocalBroadcastManager.getInstance(context).sendBroadcast(i);
                 }
@@ -66,7 +70,11 @@ public class thClient extends Thread {
             sock.close();
         }
         catch (Exception e) {
-            Log.println(Log.ASSERT, "erreur client", String.valueOf(e));
+            try {
+                sock.close();
+            } catch (IOException e1) {
+                Log.println(Log.ASSERT, "erreur close", String.valueOf(e));
+            }
         }
     }
 
@@ -79,5 +87,22 @@ public class thClient extends Thread {
             e.printStackTrace();
         }
         Log.println(Log.ASSERT, "thClient", "fin d'une connection");
+    }
+
+    public void write(String msg) {
+        try {
+            byte[] byteString = (msg).getBytes();
+            OutputStream out=sock.getOutputStream();
+
+            Log.println(Log.ASSERT, "thClient : ", "envoie du message "+msg);
+            Log.println(Log.ASSERT, "thClient", String.valueOf(byteString.length));
+
+            out.write(String.valueOf(byteString.length).getBytes());
+            out.flush();
+            out.write(byteString);
+
+        } catch (IOException e) {
+            Log.println(Log.ASSERT,"Erreur de bienvenue", e.getMessage());
+        }
     }
 }
