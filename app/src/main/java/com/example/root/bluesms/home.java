@@ -113,20 +113,6 @@ public class home extends Activity {
             if (extra[0].equals("service is died")) {
                 serviceStopped();
             }
-            if(extra[0].equals("killSevrice")) {
-                stopService(i);
-                serviceStopped();
-            }
-            if (extra[0].equals("toast")) {
-                String num = extra[1];
-                String message = extra[2];
-
-                SmsManager sms = SmsManager.getDefault();
-                sms.sendTextMessage(num, null, message, null, null);
-
-                Toast T = Toast.makeText(getApplicationContext(), num+":"+message, Toast.LENGTH_LONG);
-                T.show();
-            }
         }
     }
 

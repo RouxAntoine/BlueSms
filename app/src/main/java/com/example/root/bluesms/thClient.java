@@ -1,30 +1,32 @@
 package com.example.root.bluesms;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import android.os.Handler;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by root on 09/09/15.
  * class that manage client connection for send sms
- *
+ *  exemple of format for communicate between thClient and handle into service
  */
 public class thClient extends Thread {
     private BluetoothSocket sock = null;
-    private Context context = null;
+    private Handler handler = null;
+    private final JSONObject jsonMsg = new JSONObject();
 
-    public thClient(BluetoothSocket s,Context ctx) {
+    public thClient(BluetoothSocket s, Handler h) {
         super();
-        context = ctx;
+        handler = h;
         sock = s;
         Log.println(Log.ASSERT, "thClient", "creation d'un thread client");
     }
@@ -37,13 +39,16 @@ public class thClient extends Thread {
         boolean end = false;
         int bytesRead = 0;
         String[] arrayData = null;
-//                        {"header":{"size":"5","type":"message"},"content":"salut"}
-//                        {"header":{"size":"5","type":"numero"},"content":{"num":"0677564892","name":"toto"}}
+
         write("hello world !!!");
 
         try {
+            Message O_msg = handler.obtainMessage();
             DataInputStream in = new DataInputStream(sock.getInputStream());
+
             while(!end) {
+                Bundle b = new Bundle();
+
                 bytesRead = in.read(messageByte);
                 String dataString = new String(messageByte, 0, bytesRead);
                 arrayData = dataString.split(":");
@@ -55,15 +60,16 @@ public class thClient extends Thread {
                     if (messageString.equals("quit") || !sock.isConnected()) {
                         end = true;
                     }
-                    if (messageString.equals("!shutdown!")) {
-                        Intent i = new Intent("08945BlueSms");
-                        i.putExtra("content", new String[]{"killSevrice"});
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(i);
+                    else if (messageString.equals("!shutdown!")) {
+                        b.putString("json", setJson("Command", null, "shutdown").toString());
+                        end = true;
+                    }
+                    else {
+                        b.putString("json", setJson("Message", num, messageString).toString());
                     }
 
-                    Intent i = new Intent("08945BlueSms");
-                    i.putExtra("content", new String[]{"toast", num, messageString});
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(i);
+                    O_msg.setData(b);
+                    handler.sendMessage(O_msg);
                 }
             }
             Log.println(Log.ASSERT, "thClient", "fin d'une connection");
@@ -78,6 +84,9 @@ public class thClient extends Thread {
         }
     }
 
+    /**
+     * method for properly stop the client thread
+     */
     @Override
     public void interrupt() {
         super.interrupt();
@@ -87,6 +96,23 @@ public class thClient extends Thread {
             e.printStackTrace();
         }
         Log.println(Log.ASSERT, "thClient", "fin d'une connection");
+    }
+
+    /**
+     * method that set json attribute
+     * @param type type of the content of json attr
+     * @param num phone number if type == command them the number equal to null
+     * @param content content of the message
+     * @return return an instance of the JSONObject contain into the json attribute
+     */
+    public JSONObject setJson(String type, String num, String content) {
+        try {
+            jsonMsg.put("header",new JSONObject().put("type",type));
+            jsonMsg.put("content", new JSONObject().put("num", num).put("message",content));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonMsg;
     }
 
     public void write(String msg) {

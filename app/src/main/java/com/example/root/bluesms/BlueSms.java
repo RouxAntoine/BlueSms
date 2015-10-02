@@ -1,6 +1,5 @@
 package com.example.root.bluesms;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -10,12 +9,19 @@ import android.os.IBinder;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telephony.SmsManager;
 import android.util.Log;
 
-import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.UUID;
+import android.os.Handler;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class BlueSms extends Service {
@@ -25,6 +31,45 @@ public class BlueSms extends Service {
     private BluetoothAdapter adapter=null;
     private thServer server=null;
     private UUID uuid = UUID.randomUUID();
+
+    private final Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            String data = msg.getData().getString("json");
+            if (data != null) {
+                Log.println(Log.ASSERT,"Handler service", data);
+                try {
+                    JSONObject json = new JSONObject(data);                     // json object recover into the handler
+                    JSONObject head = (JSONObject)json.get("header");           // json object (head of the json)
+                    JSONObject content = (JSONObject)json.get("content");       // json object (content of the json)
+
+                    if(head.get("type").equals("Command")) {
+                        if(content.getString("message").equals("shutdown")) {
+                            Intent killService = new Intent(getApplicationContext(), BlueSms.class);
+                            killService.putExtra("kill", true);
+                            startService(killService);
+                        }
+                    }
+                    else if (head.get("type").equals("Message")) {
+                        String num = content.getString("num");
+                        String message = content.getString("message");
+
+                        SmsManager sms = SmsManager.getDefault();
+                        sms.sendTextMessage(num, null, message, null, null);
+
+                        Toast T = Toast.makeText(getApplicationContext(), num+":"+message, Toast.LENGTH_LONG);
+                        T.show();
+                    }
+                    else {
+                        Log.println(Log.ASSERT, "Error", "message reçu dans le handler non reconnu");
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     public BlueSms() {
         //constructor
@@ -59,7 +104,7 @@ public class BlueSms extends Service {
         adapter = ((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter();
         toggleBluetooth(ENABLE_BLUE);
 
-        server = new thServer(adapter, uuid, this);
+        server = new thServer(adapter, uuid, handler);
         server.start();
         Log.println(Log.ASSERT, "service", " Server running");
 

@@ -3,14 +3,13 @@ package com.example.root.bluesms;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import android.os.Handler;
 
 /**
  * Created by root on 09/09/15.
@@ -19,11 +18,17 @@ import java.util.UUID;
 public class thServer extends Thread {
     private BluetoothServerSocket sockServ;
     private List<thClient> lstClient = new ArrayList<thClient>();
-    private Context context =null;
+    private Handler handler =null;
 
-    public thServer(BluetoothAdapter adapter, UUID uuid, Context ctx) {
+    /**
+     * constructor of server thread class
+     * @param adapter bluetooth adaptater for create the server
+     * @param uuid uuid of the blueSms server
+     * @param h handler for communicate between service and client thread ( this handle is pass to each thClient)
+     */
+    public thServer(BluetoothAdapter adapter, UUID uuid, Handler h) {
         super();
-        context = ctx;
+        handler = h;
         Log.println(Log.ASSERT, "thServer", "Lancement d'un thread pour gerer le server");
         try {
             sockServ = adapter.listenUsingRfcommWithServiceRecord("BlueSms", uuid);
@@ -32,6 +37,9 @@ public class thServer extends Thread {
         }
     }
 
+    /**
+     * run method of server thread that wait for client connection and create for each of them a new thClient
+     */
     @Override
     public void run() {
         BluetoothSocket sock = null;
@@ -43,7 +51,7 @@ public class thServer extends Thread {
                 sock = sockServ.accept();
                 if (sock != null) {
                     Log.d("CONNECTED", "Connected bluetooth");
-                    thClient client = new thClient(sock, context);
+                    thClient client = new thClient(sock, handler);
                     lstClient.add(client);
                     client.start();
                 }
@@ -59,6 +67,9 @@ public class thServer extends Thread {
         }
     }
 
+    /**
+     * method that proper interrupt the BlueSms server by close server socket
+     */
     @Override
     public void interrupt() {
         super.interrupt();
@@ -68,6 +79,7 @@ public class thServer extends Thread {
             e.printStackTrace();
         }
     }
+
 
     /**
      * method that return the list of all client
