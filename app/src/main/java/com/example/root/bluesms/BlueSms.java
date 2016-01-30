@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 
+import android.os.Looper;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.SmsManager;
@@ -19,7 +20,6 @@ import java.util.UUID;
 import android.os.Handler;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,7 +32,7 @@ public class BlueSms extends Service {
     private thServer server=null;
     private UUID uuid = UUID.randomUUID();
 
-    private final Handler handler = new Handler() {
+    private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             String data = msg.getData().getString("json");
@@ -104,7 +104,7 @@ public class BlueSms extends Service {
         adapter = ((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter();
         toggleBluetooth(ENABLE_BLUE);
 
-        server = new thServer(adapter, uuid, handler);
+        server = new thServer(adapter, uuid, handler, getApplicationContext());
         server.start();
         Log.println(Log.ASSERT, "service", " Server running");
 
@@ -130,7 +130,7 @@ public class BlueSms extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //if boolean kill is set to true them kill the service
-        if (intent.getBooleanExtra("kill", false)) {
+        if (intent != null && intent.getBooleanExtra("kill", false)) {
             Intent i = new Intent("08945BlueSms");
             i.putExtra("content", new String[]{"service is died"});
             LocalBroadcastManager.getInstance(this).sendBroadcast(i);

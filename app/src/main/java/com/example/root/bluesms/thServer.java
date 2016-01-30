@@ -3,6 +3,7 @@ package com.example.root.bluesms;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -19,16 +20,19 @@ public class thServer extends Thread {
     private BluetoothServerSocket sockServ;
     private List<thClient> lstClient = new ArrayList<thClient>();
     private Handler handler =null;
+    private Context ctx = null;
 
     /**
      * constructor of server thread class
      * @param adapter bluetooth adaptater for create the server
      * @param uuid uuid of the blueSms server
-     * @param h handler for communicate between service and client thread ( this handle is pass to each thClient)
+     * @param _ctx context of the main application
+     * handler for communicate between service and client thread ( this handle is pass to each thClient)
      */
-    public thServer(BluetoothAdapter adapter, UUID uuid, Handler h) {
+    public thServer(BluetoothAdapter adapter, UUID uuid, Handler h, Context _ctx) {
         super();
         handler = h;
+        ctx = _ctx;
         Log.println(Log.ASSERT, "thServer", "Lancement d'un thread pour gerer le server");
         try {
             sockServ = adapter.listenUsingRfcommWithServiceRecord("BlueSms", uuid);
@@ -51,7 +55,7 @@ public class thServer extends Thread {
                 sock = sockServ.accept();
                 if (sock != null) {
                     Log.d("CONNECTED", "Connected bluetooth");
-                    thClient client = new thClient(sock, handler);
+                    thClient client = new thClient(sock, handler, ctx);
                     lstClient.add(client);
                     client.start();
                 }
@@ -79,7 +83,6 @@ public class thServer extends Thread {
             e.printStackTrace();
         }
     }
-
 
     /**
      * method that return the list of all client

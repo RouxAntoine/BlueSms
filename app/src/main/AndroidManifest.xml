@@ -18,17 +18,27 @@
             </intent-filter>
         </activity>
 
+        <!-- pour configurer un broadcast receiver static -->
+        <!--<receiver android:name=".SmsListener">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.provider.Telephony.SMS_RECEIVED" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
+
+        <!-- pour corriger le probleme des icones blanc sous android dans la bar de notification-->
         <service
             android:name=".BlueSms"
             android:enabled="true"
             android:exported="true">
         </service>
 
-        <!-- pour corriger le probleme des icones blanc sous android dans la bar de notification-->
         <uses-sdk android:minSdkVersion="..." android:targetSdkVersion="20" />
     </application>
 
+
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
 </manifest>

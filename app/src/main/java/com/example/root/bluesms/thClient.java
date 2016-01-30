@@ -1,7 +1,12 @@
 package com.example.root.bluesms;
 
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -10,7 +15,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import android.os.Handler;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,15 +24,33 @@ import org.json.JSONObject;
  *  exemple of format for communicate between thClient and handle into service
  */
 public class thClient extends Thread {
-    private BluetoothSocket sock = null;
-    private Handler handler = null;
-    private final JSONObject jsonMsg = new JSONObject();
+//public class thClient extends HandlerThread {
 
-    public thClient(BluetoothSocket s, Handler h) {
+    private BluetoothSocket sock = null;
+    private Handler handlerEnvoiSms = null;
+    private final JSONObject jsonMsg = new JSONObject();
+    private Context ctx;
+    private BroadcastReceiver smsReceiver;
+
+    private Handler handlerSmsRecu = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            String s = msg.getData().getString("smsRecu");
+            write(s);
+            System.out.println("Envoi par bluetooth du message reçu par sms : "+s);
+        }
+    };
+
+    public thClient(BluetoothSocket s, Handler h, Context ctx) {
         super();
-        handler = h;
+        handlerEnvoiSms = h;
         sock = s;
+        this.ctx = ctx;
         Log.println(Log.ASSERT, "thClient", "creation d'un thread client");
+
+        smsReceiver = new SmsListener(handlerSmsRecu);
+        IntentFilter intentFilter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+        this.ctx.registerReceiver(smsReceiver, intentFilter);
     }
 
     @Override
@@ -40,21 +62,24 @@ public class thClient extends Thread {
         int bytesRead = 0;
         String[] arrayData = null;
 
-        write("hello world !!!");
+        setJson("debug", "Server", "hello world !!!");
+        write(jsonMsg.toString());
 
         try {
-            Message O_msg = handler.obtainMessage();
             DataInputStream in = new DataInputStream(sock.getInputStream());
 
             while(!end) {
+                Message O_msg = handlerEnvoiSms.obtainMessage();
                 Bundle b = new Bundle();
 
                 bytesRead = in.read(messageByte);
                 String dataString = new String(messageByte, 0, bytesRead);
+
+                System.err.println("recu : "+dataString);
                 arrayData = dataString.split(":");
 
                 if(arrayData.length > 1) {
-                    String num =arrayData[0];
+                    String num = arrayData[0];
                     String messageString = arrayData[1];
 
                     if (messageString.equals("quit") || !sock.isConnected()) {
@@ -65,11 +90,12 @@ public class thClient extends Thread {
                         end = true;
                     }
                     else {
+                        System.err.println("sms recu par bluetooth préparation avant envoi par bluetooth");
                         b.putString("json", setJson("Message", num, messageString).toString());
                     }
 
                     O_msg.setData(b);
-                    handler.sendMessage(O_msg);
+                    handlerEnvoiSms.sendMessage(O_msg);
                 }
             }
             Log.println(Log.ASSERT, "thClient", "fin d'une connection");
@@ -96,6 +122,7 @@ public class thClient extends Thread {
             e.printStackTrace();
         }
         Log.println(Log.ASSERT, "thClient", "fin d'une connection");
+        this.ctx.unregisterReceiver(smsReceiver);
     }
 
     /**
@@ -123,7 +150,7 @@ public class thClient extends Thread {
             Log.println(Log.ASSERT, "thClient : ", "envoie du message "+msg);
             Log.println(Log.ASSERT, "thClient", String.valueOf(byteString.length));
 
-            out.write(String.valueOf(byteString.length).getBytes());
+            out.write((String.valueOf(byteString.length) + '\n').getBytes());
             out.flush();
             out.write(byteString);
 
