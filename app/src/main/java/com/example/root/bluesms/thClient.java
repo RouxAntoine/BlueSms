@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +43,8 @@ public class thClient extends Thread {
     private final JSONObject jsonContact = new JSONObject();
     private Context ctx;
     private BroadcastReceiver smsReceiver;
-    private CharsetEncoder enc = Charset.forName("UTF-8").newEncoder();;
+    private CharsetEncoder enc = Charset.forName("UTF-8").newEncoder();
+    private CharsetDecoder dec = Charset.forName("UTF-8").newDecoder();
 
     private Handler handlerSmsRecu = new Handler(Looper.getMainLooper()) {
         @Override
@@ -119,8 +121,6 @@ public class thClient extends Thread {
                     }
                     else if (messageString.equals("!contact!")) {
                         // recuperation des contacts et json-nization
-//                        ArrayList<HashMap<String,String>> contactData=new ArrayList<HashMap<String,String>>();
-
                         ContentResolver cr = ctx.getContentResolver();
                         Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 
@@ -136,10 +136,6 @@ public class thClient extends Thread {
                                     while (phones.moveToNext()) {
                                         String phoneNumber = phones.getString(phones.getColumnIndex( ContactsContract.CommonDataKinds.Phone.NUMBER));
                                         setJsonContact(name, phoneNumber);
-//                                        HashMap<String,String> map=new HashMap<String,String>();
-//                                        map.put("name", name);
-//                                        map.put("number", phoneNumber);
-//                                        contactData.add(map);
                                     }
                                     phones.close();
                                 }
@@ -220,14 +216,12 @@ public class thClient extends Thread {
 
     public void write(ByteBuffer msg) {
         try {
-            byte[] byteString = msg.array();
+            byte[] byteString = new byte[msg.remaining()];
+            msg.get(byteString, 0, msg.remaining());
             OutputStream out=sock.getOutputStream();
 
-            Log.println(Log.ASSERT, "thClient : ", "envoie du message "+msg);
-            Log.println(Log.ASSERT, "thClient", String.valueOf(byteString.length));
-
-            out.write(msg);//(String.valueOf(byteString.length) + '\n').getBytes());
-            out.flush();
+            out.write((String.valueOf(byteString.length)).getBytes());
+//            out.flush();
             out.write(byteString);
 
         } catch (IOException e) {
