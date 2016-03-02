@@ -20,6 +20,8 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.os.Handler;
 
@@ -41,11 +43,18 @@ public class thClient extends Thread {
     private final JSONObject jsonContact = new JSONObject();
     private Context ctx;
     private BroadcastReceiver smsReceiver;
+    private CharsetEncoder enc = Charset.forName("UTF-8").newEncoder();
+    private CharsetDecoder dec = Charset.forName("UTF-8").newDecoder();
+
     private Handler handlerSmsRecu = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             String s = msg.getData().getString("smsRecu");
-            write(s);
+            try {
+                write(enc.encode(CharBuffer.wrap(s)));
+            } catch (CharacterCodingException e) {
+                e.printStackTrace();
+            }
             System.out.println("Envoi par bluetooth du message reçu par sms : "+s);
         }
     };
@@ -80,7 +89,11 @@ public class thClient extends Thread {
         String[] arrayData = null;
 
         setJson("debug", "Server", "hello world !!!");
-        write(jsonMsg.toString());
+        try {
+            write(enc.encode(CharBuffer.wrap(jsonMsg.toString())));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
             DataInputStream in = new DataInputStream(sock.getInputStream());
@@ -129,7 +142,11 @@ public class thClient extends Thread {
                             }catch(Exception e){}
                         }
                         System.err.println(jsonContact.toString());
-                        write(jsonContact.toString());
+                        try {
+                            write(enc.encode(CharBuffer.wrap(jsonContact.toString())));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                     else {
                         System.err.println("sms recu préparation avant envoi par bluetooth");
@@ -189,7 +206,7 @@ public class thClient extends Thread {
      */
     public JSONObject setJson(String type, String num, String content) {
         try {
-            jsonMsg.put("header", new JSONObject().put("type", type));
+            jsonMsg.put("header",new JSONObject().put("type", type));
             jsonMsg.put("content", new JSONObject().put("num", num).put("message", content));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -197,13 +214,8 @@ public class thClient extends Thread {
         return jsonMsg;
     }
 
-    public void write(String in) {
-        CharsetEncoder enc = Charset.forName("UTF-8").newEncoder();
-//        CharsetDecoder dec = Charset.forName("UTF-8").newDecoder();
-
-        ByteBuffer msg = null;
+    public void write(ByteBuffer msg) {
         try {
-            msg = enc.encode(CharBuffer.wrap(in));
             byte[] byteString = new byte[msg.remaining()];
             msg.get(byteString, 0, msg.remaining());
             OutputStream out=sock.getOutputStream();

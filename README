@@ -4,5 +4,5 @@ An android application provide a bluetooth server which wait for incoming connec
 When some people connect to server he could send sms to android device thanks to bluetooth and the smartphone laid-off sms to destination with classic sms sender service.
 
 
-for an example of bluetooth client implementation see depository python client bluesms
+for an example of bluetooth client implementation see python client bluesms (BluetoothClientSocket.py)
 carefull no authentification for incoming client is set on server side.

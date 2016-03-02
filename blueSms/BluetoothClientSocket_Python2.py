@@ -1,4 +1,4 @@
-#!/bin/python
+#!/bin/python2
 import re
 
 import pyemoji
@@ -31,11 +31,12 @@ class th_recv(threading.Thread):
         if(o['header']['type'] == 'contact'):
             global contact
             contact = o['content']
+            contact = remove_duplicates(contact)
             return None, None
         return o["content"]["num"], pyemoji.decode(o["content"]["message"])
 
     def run(self):
-        lenSend = sock.send(bytes("system:!contact!", 'UTF-8'))
+        lenSend = sock.send(bytes("system:!contact!"))
         
         while not self.quit:
             self.receive()
@@ -48,7 +49,7 @@ class th_recv(threading.Thread):
                     complement = "\n"
                 num, text = self.parseJson()
                 if(num != None and text != None):
-                    print("\n   >>>  message reçu : \n   De : "+num+"\n   :: "+text+complement)
+                    print("\n   >>>  message recu : \n   De : "+num+"\n   :: "+text+complement)
                 else:
                     pprint(contact)
                     print(complement)
@@ -68,7 +69,7 @@ class th_recv(threading.Thread):
         regChiffre = re.compile(r"^[0-9]*$")
 
         if regChiffre.match(lenToReceive) == None:
-            lenToReceive,self.msg = lenToReceive.split('{', maxsplit=1)
+            lenToReceive,self.msg = lenToReceive.split('{', 1)
             self.msg = '{'+self.msg
             recu = len(self.msg)
         
@@ -80,7 +81,7 @@ class th_recv(threading.Thread):
                 return ""
             recu +=10
             # self.msg += pyemoji.decode(x.decode("utf-8"))
-            self.msg += x.decode("utf-8")
+            self.msg += x.decode("latin1")
             # print("msg : "+str(self.msg))
             # print(recu)
 
@@ -125,9 +126,30 @@ def nomToNum(nom):
         for l in contact:
             if nom in l.values():
                 num.append(str(l['num']))
+        if len(num)==0:
+            raise MyException("Contact "+nom+" not found into the phonebook")
     else:
-        raise MyException("Contact not found into the phonebook")
+        raise MyException("Contact "+nom+" not found into the phonebook")
     return num
+
+def remove_duplicates(lst, equals=lambda x, y: x == y):
+    if not isinstance(lst, list):
+        raise TypeError('This function works only with lists.')
+    i1 = 0
+    l = (len(lst) - 1)
+    while i1 < l:
+        elem = lst[i1]['nom']
+        i2 = i1 + 1
+        print("elem : "+elem)
+        while i2 <= l:
+            if equals(elem, lst[i2]['nom']):
+                del lst[i2]
+                l -= 1
+            else:
+                i2 += 1
+        i1 += 1
+    return lst
+
 
 def makeAChoice(num):
     while True:
@@ -135,7 +157,7 @@ def makeAChoice(num):
         for n in num:
             print(str(i)+" : "+n)
             i+=1
-        c = input("Choisissez le numéro que vous souhaitez utiliser : ")
+        c = input("Choisissez le numero que vous souhaitez utiliser : ")
         if int(c) < i:
             break
     
@@ -151,7 +173,7 @@ if __name__ == "__main__":
     while 1:
         searchBlueSms = bluetooth.find_service(address=addr, name='BlueSms')
         if not searchBlueSms:
-            print("Erreur : aucun serveur BlueSms à proximité")
+            print("Erreur : aucun serveur BlueSms a proximite")
             sys.exit(1)
 
         for dev in searchBlueSms:
@@ -174,48 +196,48 @@ if __name__ == "__main__":
 
         while 1:
             try:
-
+                num = ""
+                text = ""
                 numCurrentlyKeyIn = True
-                num = input('Numero du destinataire : ')
+                num = raw_input('Numero ou nom du destinataire : ')
                 numCurrentlyKeyIn = False
                 textCurrentlyKeyIn = True
-                text = input("Tappez votre message : ")
+                text = raw_input("Tappez votre message : ")
                 textCurrentlyKeyIn = False
-                # print("old : "+str(old))                #   @debug
 
                 old = [num, text]
                 if num and text:
                     regNum = re.compile(r"^[0+]([[0-9]-])*")
-                    if regNum.match(num):
+                    regNom = re.compile(r"^!.*!$")
+                    if text == "quit" or text == "!shutdown!":
+                        kill_thread(sock)
+                        turnOnBluetoothAdapter("off")
+                        sys.exit(1)
+                    if regNum.match(num) or regNom.match(text):
                         print('num : '+num)
                     else :
                         print('nom : '+num)
 
                         try:
                             num = nomToNum(num)
+                            if len(num) > 1:
+                                num = makeAChoice(num)
+                            else:
+                                num = num[0]
+    
                         except MyException as e:
                             print(e)
-
-                        if len(num) > 1:
-                            num = makeAChoice(num)
-                        else:
-                            num = num[0]
+                            continue
                         
-                        print('num du nom : '+num)
-
-                    lenSend = sock.send(bytes(num+":"+text, 'UTF-8'))
-                    print(str(lenSend)+" caractère envoyé")
-                    if text == "quit" or text == "!shutdown!":
-                        kill_thread(sock)
-                        turnOnBluetoothAdapter("off")
-                        sys.exit(1)
+                    lenSend = sock.send(bytes(num+":"+text))
+                    print(str(lenSend)+" caractere envoye")
                 elif not old[0] and not old[1] and not num and not text:
                     kill_thread(sock)
                     turnOnBluetoothAdapter("off")
                     sys.exit(1)
 
             except OSError as e:
-                print("Fin de la connection le serveur a été déconnecté !!! ")
+                print("Fin de la connection le serveur a ete deconnecte !!! ")
                 break
 
         kill_thread(sock)
