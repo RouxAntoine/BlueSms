@@ -2,32 +2,46 @@
 <items version="2" >
 
     <item
-        jar="/root/android/blueSms/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/classes.jar"
-        jumboMode="false"
+        jar="/root/android/blueSms/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
         revision="22.0.1"
-        sha1="f8efd0096475e0daf054267b61544e10dc776503">
-        <dex dex="/root/android/blueSms/app/build/intermediates/pre-dexed/debug/classes-cc41fabf71bbe140f97aaad13acee6b773f1a8be.jar" />
+        sha1="2eee3ae2dd2f680fa9aa0bfb335bf7aa474a66bb">
+        <dex dex="/root/android/blueSms/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_b6d6df101619d3672ee09762fac804105c43c859/classes.dex" />
     </item>
     <item
-        jar="/opt/android-sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.1/support-annotations-22.2.1.jar"
-        jumboMode="false"
+        jar="/root/data/android-sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.1/support-annotations-22.2.1.jar"
+        jumboMode="true"
         revision="22.0.1"
         sha1="61a0ff5c29295ec56d7e0bd3d25d95dbf71b4b2b">
-        <dex dex="/root/android/blueSms/app/build/intermediates/pre-dexed/debug/support-annotations-22.2.1-15ffb3ae85f3434f2eb371cfed5e4df15e215154.jar" />
+        <dex dex="/root/android/blueSms/app/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-22.2.1_85d62a16007c005c1e8055958ee2c812d7bea1b5/classes.dex" />
     </item>
     <item
         jar="/root/android/blueSms/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/libs/internal_impl-22.2.1.jar"
-        jumboMode="false"
+        jumboMode="true"
         revision="22.0.1"
         sha1="c471eaaba13ff64f6e0383d1c30a9cdc9a97efeb">
-        <dex dex="/root/android/blueSms/app/build/intermediates/pre-dexed/debug/internal_impl-22.2.1-c9bfe9e7a734093ad05ae078a1b417921f98b5ed.jar" />
+        <dex dex="/root/android/blueSms/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-22.2.1_c9bfe9e7a734093ad05ae078a1b417921f98b5ed/classes.dex" />
+    </item>
+    <item
+        jar="/root/android/blueSms/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="22.0.1"
+        sha1="f8efd0096475e0daf054267b61544e10dc776503">
+        <dex dex="/root/android/blueSms/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-22.2.1_cc41fabf71bbe140f97aaad13acee6b773f1a8be/classes.dex" />
     </item>
     <item
         jar="/root/android/blueSms/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.1/jars/classes.jar"
-        jumboMode="false"
+        jumboMode="true"
         revision="22.0.1"
         sha1="4486e953d1f35f8ccab098b1dd67146366d5f731">
-        <dex dex="/root/android/blueSms/app/build/intermediates/pre-dexed/debug/classes-ddf21f1ef1a73cea85159935727e71a377d37498.jar" />
+        <dex dex="/root/android/blueSms/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-22.2.1_ddf21f1ef1a73cea85159935727e71a377d37498/classes.dex" />
+    </item>
+    <item
+        jar="/root/android/blueSms/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="22.0.1"
+        sha1="b96517db7dee33fe9534fc5a549c67310069d80d">
+        <dex dex="/root/android/blueSms/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_9846903e5a865351afeebabafbe475d0ed843e21/classes.dex" />
     </item>
 
 </items>
