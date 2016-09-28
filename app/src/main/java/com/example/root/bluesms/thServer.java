@@ -1,3 +1,8 @@
+/*
+ *  FILE create by antoine Roux
+ *  <antoinroux@hotmail.fr>
+ */
+
 package com.example.root.bluesms;
 
 import android.bluetooth.BluetoothAdapter;

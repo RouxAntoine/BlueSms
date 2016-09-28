@@ -6,3 +6,18 @@ When some people connect to server he could send sms to android device thanks to
 
 for an example of bluetooth client implementation see python client bluesms (BluetoothClientSocket.py)
 carefull no authentification for incoming client is set on server side.
+
+
+
+/******/
+
+Le dossier dist contient un version fonctionnel de l'apk
+ainsi que le script python fonctionnel sous archlinux.
+Ce script ne gère pas l'authentification et l'appairage avec le telephone.
+Il faut donc s'assuré que le telephone et correctement appairé avec l'ordinateur
+Le script est censé activé le bluetooth de l'ordinateur via l'interface dBus linux de bluez
+ceci n'est pas générique et peux donc ne pas fonctionné sous d'autre distribution.
+
+
+have fun with it ! :)
+
