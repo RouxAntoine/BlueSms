@@ -1,4 +1,4 @@
-An android application provide a bluetooth server which wait for incoming connection.
+An android application which provide bluetooth server waiting for incoming connection.
 
 
 When some people connect to server he could send sms to android device thanks to bluetooth and the smartphone laid-off sms to destination with classic sms sender service.
@@ -14,9 +14,9 @@ carefull no authentification for incoming client is set on server side.
 Le dossier dist contient un version fonctionnel de l'apk
 ainsi que le script python fonctionnel sous archlinux.
 Ce script ne gère pas l'authentification et l'appairage avec le telephone.
-Il faut donc s'assuré que le telephone et correctement appairé avec l'ordinateur
-Le script est censé activé le bluetooth de l'ordinateur via l'interface dBus linux de bluez
-ceci n'est pas générique et peux donc ne pas fonctionné sous d'autre distribution.
+Il faut donc s'assurer que le telephone et correctement appairé avec l'ordinateur
+Le script est censé activer le bluetooth de l'ordinateur via l'interface dBus linux de bluez
+ceci n'est pas générique et peux donc ne pas fonctionner sous d'autre distribution.
 
 
 have fun with it ! :)
